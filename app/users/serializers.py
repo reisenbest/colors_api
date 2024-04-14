@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from rest_framework import serializers
+from django.contrib.auth import authenticate
 
 UserModel = get_user_model()
 
@@ -37,22 +39,21 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-from rest_framework import serializers
-from django.contrib.auth import authenticate
+
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)
+    login = serializers.CharField(max_length=150)
     password = serializers.CharField(
         style={'input_type': 'password'},
         write_only = True,
     )
 
     def validate(self, attrs):
-        username = attrs.get('username')
+        login = attrs.get('login')
         password = attrs.get('password')
 
-        if username and password:
-            user = authenticate(username=username, password=password)
+        if login and password:
+            user = authenticate(login=login, password=password)
             if user:
                 if not user.is_active:
                     raise serializers.ValidationError('Учетная запись неактивна.')
